@@ -27,7 +27,7 @@ cd ./src/migrations
 node createAFLEventsTable.js
 ```
 
-## Run project event type
+## Run project
 
 - Access root foder:
 

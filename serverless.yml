@@ -1,0 +1,31 @@
+service: aws-node-scheduled-cron-project
+frameworkVersion: '3'
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+
+functions:
+  runCronJobGetEventForSale:
+    handler: index.runCronJobGetEventForSale
+    events:
+      - schedule: rate(1 minute)
+
+  runCronJobGetEventTokenPurchased:
+    handler: index.runCronJobGetEventTokenPurchased
+    events:
+      - schedule: rate(1 minute)
+
+  runCronJobGetEventSaleCanceled:
+    handler: index.runCronJobGetEventSaleCanceled
+    events:
+      - schedule: rate(1 minute)
+
+  runCronJobGetEventPriceChanged:
+    handler: index.runCronJobGetEventPriceChanged
+    events:
+      - schedule: rate(1 minute)
+

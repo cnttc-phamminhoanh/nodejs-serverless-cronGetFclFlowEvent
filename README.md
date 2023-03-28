@@ -4,7 +4,8 @@
 ## Descriptions
 
 - Database used: postgres
-- Crons will run every 1 minutes
+- Crons will run every 1 minutes for get events and send to webhook
+- Url webhook local: <http://localhost:3001/api/marketplace/graffle>
 
 ## Set up
 

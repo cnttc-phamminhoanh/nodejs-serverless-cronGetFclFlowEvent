@@ -9,7 +9,9 @@
 
 ## Set up
 
-- Open database.js file and change config fields: database, password.
+- Create new database in postgres: `AFL-lambda-DB`
+
+- Open database.js file and change config fields: database: `AFL-lambda-DB`, password: `<your_password>`.
 
 - Install packages:
 
@@ -17,14 +19,14 @@
 npm install
 ```
 
-- Create table: "afl_events":
+- Create table: `afl_events`:
 
 ```pseudo
 cd ./src/migrations
 ```
 
 ```pseudo
-node createAFLEventsTable.js
+node createEventCursorTable.js
 ```
 
 ## Run project

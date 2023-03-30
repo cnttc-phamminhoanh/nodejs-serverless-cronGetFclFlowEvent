@@ -2,16 +2,18 @@ const dotenv = require("dotenv");
 dotenv.config();
 const fcl = require("@onflow/fcl");
 const { send: transportGRPC } = require("@onflow/transport-grpc");
-const { getEvents } = require("./src/services/FCLFlowService");
 const {
-  createAFLEvent,
-  updateAFLEvent,
-} = require("./src/services/AFLEventService");
-const { getLastSavedAFLEvent } = require("./src/services/AFLEventService");
+  getEventsByRange,
+  getLatestBlock,
+} = require("./src/services/FCLFlowService");
+const {
+  createEventCursor,
+  updateEventCursor,
+  getEventCursor,
+} = require("./src/services/eventCursorService");
 const { connectDB } = require("./database");
-const { events, blockHeightRange } = require("./constants/index");
+const { events, stepSize } = require("./constants/index");
 const { sendData } = require("./src/services/webhookSenderService");
-
 
 module.exports.runCronJobGetEventForSale = async function (event, context) {
   await connectDB();
@@ -21,21 +23,28 @@ module.exports.runCronJobGetEventForSale = async function (event, context) {
     "sdk.transport": transportGRPC,
   });
 
-  const aflEventInDB = await getLastSavedAFLEvent(events.forSale.eventName);
+  let fetchEvents, fromBlockHeight, toBlockHeight;
 
-  let fetchEvents;
+  const latestBlock = await getLatestBlock();
 
-  if (!aflEventInDB) {
-    const fromBlockHeight = events.forSale.blockHeightDefault;
-    const toBlockHeight = fromBlockHeight + blockHeightRange;
+  const latestBlockHeight = latestBlock?.height;
 
-    fetchEvents = await getEvents({
+  const eventCursor = await getEventCursor(events.forSale.eventName);
+
+  if (!eventCursor) {
+    fromBlockHeight = events.forSale.blockHeightDefault;
+    toBlockHeight =
+      fromBlockHeight + stepSize < latestBlockHeight
+        ? fromBlockHeight + stepSize
+        : latestBlockHeight;
+
+    fetchEvents = await getEventsByRange({
       eventName: events.forSale.eventName,
       fromBlockHeight,
       toBlockHeight,
     });
 
-    await createAFLEvent({
+    await createEventCursor({
       blockHeight: toBlockHeight,
       type: events.forSale.eventName,
     });
@@ -63,18 +72,21 @@ module.exports.runCronJobGetEventForSale = async function (event, context) {
     return;
   }
 
-  const fromBlockHeight = aflEventInDB.blockHeight;
-  const toBlockHeight = fromBlockHeight + blockHeightRange;
+  fromBlockHeight = eventCursor.blockHeight + 1;
+  toBlockHeight =
+    fromBlockHeight + stepSize < latestBlockHeight
+      ? fromBlockHeight + stepSize
+      : latestBlockHeight;
 
-  fetchEvents = await getEvents({
-    eventName: aflEventInDB.type,
+  fetchEvents = await getEventsByRange({
+    eventName: eventCursor.type,
     fromBlockHeight,
     toBlockHeight,
   });
 
-  await updateAFLEvent({
+  await updateEventCursor({
     blockHeight: toBlockHeight,
-    type: aflEventInDB.type,
+    type: eventCursor.type,
   });
 
   if (!fetchEvents?.length) {
@@ -100,7 +112,10 @@ module.exports.runCronJobGetEventForSale = async function (event, context) {
   return;
 };
 
-module.exports.runCronJobGetEventTokenPurchased = async function (event, context) {
+module.exports.runCronJobGetEventTokenPurchased = async function (
+  event,
+  context
+) {
   await connectDB();
 
   fcl.config({
@@ -108,21 +123,28 @@ module.exports.runCronJobGetEventTokenPurchased = async function (event, context
     "sdk.transport": transportGRPC,
   });
 
-  const aflEventInDB = await getLastSavedAFLEvent(events.tokenPurchased.eventName);
+  let fetchEvents, fromBlockHeight, toBlockHeight;
 
-  let fetchEvents;
+  const latestBlock = await getLatestBlock();
 
-  if (!aflEventInDB) {
-    const fromBlockHeight = events.tokenPurchased.blockHeightDefault;
-    const toBlockHeight = fromBlockHeight + blockHeightRange;
+  const latestBlockHeight = latestBlock?.height;
 
-    fetchEvents = await getEvents({
+  const eventCursor = await getEventCursor(events.tokenPurchased.eventName);
+
+  if (!eventCursor) {
+    fromBlockHeight = events.tokenPurchased.blockHeightDefault;
+    toBlockHeight =
+      fromBlockHeight + stepSize < latestBlockHeight
+        ? fromBlockHeight + stepSize
+        : latestBlockHeight;
+
+    fetchEvents = await getEventsByRange({
       eventName: events.tokenPurchased.eventName,
       fromBlockHeight,
       toBlockHeight,
     });
 
-    await createAFLEvent({
+    await createEventCursor({
       blockHeight: toBlockHeight,
       type: events.tokenPurchased.eventName,
     });
@@ -150,18 +172,21 @@ module.exports.runCronJobGetEventTokenPurchased = async function (event, context
     return;
   }
 
-  const fromBlockHeight = aflEventInDB.blockHeight;
-  const toBlockHeight = fromBlockHeight + blockHeightRange;
+  fromBlockHeight = eventCursor.blockHeight + 1;
+  toBlockHeight =
+    fromBlockHeight + stepSize < latestBlockHeight
+      ? fromBlockHeight + stepSize
+      : latestBlockHeight;
 
-  fetchEvents = await getEvents({
-    eventName: aflEventInDB.type,
+  fetchEvents = await getEventsByRange({
+    eventName: eventCursor.type,
     fromBlockHeight,
     toBlockHeight,
   });
 
-  await updateAFLEvent({
+  await updateEventCursor({
     blockHeight: toBlockHeight,
-    type: aflEventInDB.type,
+    type: eventCursor.type,
   });
 
   if (!fetchEvents?.length) {
@@ -187,7 +212,10 @@ module.exports.runCronJobGetEventTokenPurchased = async function (event, context
   return;
 };
 
-module.exports.runCronJobGetEventSaleCanceled = async function (event, context) {
+module.exports.runCronJobGetEventSaleCanceled = async function (
+  event,
+  context
+) {
   await connectDB();
 
   fcl.config({
@@ -195,21 +223,28 @@ module.exports.runCronJobGetEventSaleCanceled = async function (event, context) 
     "sdk.transport": transportGRPC,
   });
 
-  const aflEventInDB = await getLastSavedAFLEvent(events.saleCanceled.eventName);
+  let fetchEvents, fromBlockHeight, toBlockHeight;
 
-  let fetchEvents;
+  const latestBlock = await getLatestBlock();
 
-  if (!aflEventInDB) {
-    const fromBlockHeight = events.saleCanceled.blockHeightDefault;
-    const toBlockHeight = fromBlockHeight + blockHeightRange;
+  const latestBlockHeight = latestBlock?.height;
 
-    fetchEvents = await getEvents({
+  const eventCursor = await getEventCursor(events.saleCanceled.eventName);
+
+  if (!eventCursor) {
+    fromBlockHeight = events.saleCanceled.blockHeightDefault;
+    toBlockHeight =
+      fromBlockHeight + stepSize < latestBlockHeight
+        ? fromBlockHeight + stepSize
+        : latestBlockHeight;
+
+    fetchEvents = await getEventsByRange({
       eventName: events.saleCanceled.eventName,
       fromBlockHeight,
       toBlockHeight,
     });
 
-    await createAFLEvent({
+    await createEventCursor({
       blockHeight: toBlockHeight,
       type: events.saleCanceled.eventName,
     });
@@ -237,18 +272,21 @@ module.exports.runCronJobGetEventSaleCanceled = async function (event, context) 
     return;
   }
 
-  const fromBlockHeight = aflEventInDB.blockHeight;
-  const toBlockHeight = fromBlockHeight + blockHeightRange;
+  fromBlockHeight = eventCursor.blockHeight + 1;
+  toBlockHeight =
+    fromBlockHeight + stepSize < latestBlockHeight
+      ? fromBlockHeight + stepSize
+      : latestBlockHeight;
 
-  fetchEvents = await getEvents({
-    eventName: aflEventInDB.type,
+  fetchEvents = await getEventsByRange({
+    eventName: eventCursor.type,
     fromBlockHeight,
     toBlockHeight,
   });
 
-  await updateAFLEvent({
+  await updateEventCursor({
     blockHeight: toBlockHeight,
-    type: aflEventInDB.type,
+    type: eventCursor.type,
   });
 
   if (!fetchEvents?.length) {
@@ -274,7 +312,10 @@ module.exports.runCronJobGetEventSaleCanceled = async function (event, context) 
   return;
 };
 
-module.exports.runCronJobGetEventPriceChanged = async function (event, context) {
+module.exports.runCronJobGetEventPriceChanged = async function (
+  event,
+  context
+) {
   await connectDB();
 
   fcl.config({
@@ -282,21 +323,28 @@ module.exports.runCronJobGetEventPriceChanged = async function (event, context) 
     "sdk.transport": transportGRPC,
   });
 
-  const aflEventInDB = await getLastSavedAFLEvent(events.priceChanged.eventName);
+  let fetchEvents, fromBlockHeight, toBlockHeight;
 
-  let fetchEvents;
+  const latestBlock = await getLatestBlock();
 
-  if (!aflEventInDB) {
-    const fromBlockHeight = events.priceChanged.blockHeightDefault;
-    const toBlockHeight = fromBlockHeight + blockHeightRange;
+  const latestBlockHeight = latestBlock?.height;
 
-    fetchEvents = await getEvents({
+  const eventCursor = await getEventCursor(events.priceChanged.eventName);
+
+  if (!eventCursor) {
+    fromBlockHeight = events.priceChanged.blockHeightDefault;
+    toBlockHeight =
+      fromBlockHeight + stepSize < latestBlockHeight
+        ? fromBlockHeight + stepSize
+        : latestBlockHeight;
+
+    fetchEvents = await getEventsByRange({
       eventName: events.priceChanged.eventName,
       fromBlockHeight,
       toBlockHeight,
     });
 
-    await createAFLEvent({
+    await createEventCursor({
       blockHeight: toBlockHeight,
       type: events.priceChanged.eventName,
     });
@@ -324,18 +372,21 @@ module.exports.runCronJobGetEventPriceChanged = async function (event, context) 
     return;
   }
 
-  const fromBlockHeight = aflEventInDB.blockHeight;
-  const toBlockHeight = fromBlockHeight + blockHeightRange;
+  fromBlockHeight = eventCursor.blockHeight + 1;
+  toBlockHeight =
+    fromBlockHeight + stepSize < latestBlockHeight
+      ? fromBlockHeight + stepSize
+      : latestBlockHeight;
 
-  fetchEvents = await getEvents({
-    eventName: aflEventInDB.type,
+  fetchEvents = await getEventsByRange({
+    eventName: eventCursor.type,
     fromBlockHeight,
     toBlockHeight,
   });
 
-  await updateAFLEvent({
+  await updateEventCursor({
     blockHeight: toBlockHeight,
-    type: aflEventInDB.type,
+    type: eventCursor.type,
   });
 
   if (!fetchEvents?.length) {

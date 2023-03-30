@@ -3,8 +3,6 @@ const axios = require('axios')
 
 async function sendData(params) {
   try {
-    console.log(params);
-
     const { url, data } = params;
 
     const { flowEventId, blockEventData } = params.data;

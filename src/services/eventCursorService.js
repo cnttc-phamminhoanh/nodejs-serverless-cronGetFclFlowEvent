@@ -1,6 +1,6 @@
 const { pool } = require("../../database");
 
-async function createAFLEvent(params) {
+async function createEventCursor(params) {
   try {
     const { blockHeight, type } = params;
 
@@ -12,7 +12,7 @@ async function createAFLEvent(params) {
     }
 
     const result = await pool.query(
-      `INSERT INTO afl_events (
+      `INSERT INTO event_cursor (
                     "blockHeight",
                     "type"
                   ) 
@@ -22,11 +22,11 @@ async function createAFLEvent(params) {
 
     return result.rows[0];
   } catch (error) {
-    console.log(`* Function createAFLEvent error: ${error}`);
+    console.log(`* Function createEventCursor error: ${error}`);
   }
 }
 
-async function updateAFLEvent(params) {
+async function updateEventCursor(params) {
   try {
     const { blockHeight, type } = params;
 
@@ -38,18 +38,18 @@ async function updateAFLEvent(params) {
     }
 
     const result = await pool.query(
-      `UPDATE afl_events SET "blockHeight" = $1, "updatedAt" = $2 WHERE "type" = $3
+      `UPDATE event_cursor SET "blockHeight" = $1, "updatedAt" = $2 WHERE "type" = $3
       `,
       [params.blockHeight,new Date(Date.now()), params.type]
     );
 
     return result.rows[0];
   } catch (error) {
-    console.log(`* Function updateAFLEvent error: ${error}`);
+    console.log(`* Function updateEventCursor error: ${error}`);
   }
 }
 
-async function getLastSavedAFLEvent(eventName) {
+async function getEventCursor(eventName) {
   try {
     if (!eventName) {
       throw {
@@ -59,19 +59,19 @@ async function getLastSavedAFLEvent(eventName) {
     }
 
     const result = await pool.query(
-      `SELECT * FROM afl_events WHERE "type" = $1
+      `SELECT * FROM event_cursor WHERE "type" = $1
       `,
       [eventName]
     );
 
     return result.rows[0];
   } catch (error) {
-    console.log(`* Function getLastSavedAFLEvent error: ${error}`);
+    console.log(`* Function getEventCursor error: ${error}`);
   }
 }
 
 module.exports = {
-  createAFLEvent,
-  updateAFLEvent,
-  getLastSavedAFLEvent,
+  createEventCursor,
+  updateEventCursor,
+  getEventCursor,
 };

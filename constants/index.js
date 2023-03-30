@@ -1,7 +1,7 @@
 const dotenv = require("dotenv");
 dotenv.config();
 
-const blockHeightRange = 249;
+const stepSize = 100;
 
 const events = {
   forSale: {
@@ -24,5 +24,5 @@ const events = {
 
 module.exports = {
   events,
-  blockHeightRange
+  stepSize,
 };

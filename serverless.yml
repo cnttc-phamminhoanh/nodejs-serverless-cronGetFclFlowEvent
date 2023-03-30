@@ -11,21 +11,25 @@ provider:
 functions:
   runCronJobGetEventForSale:
     handler: index.runCronJobGetEventForSale
+    timeout: 30
     events:
       - schedule: rate(1 minute)
 
   runCronJobGetEventTokenPurchased:
     handler: index.runCronJobGetEventTokenPurchased
+    timeout: 30
     events:
       - schedule: rate(1 minute)
 
   runCronJobGetEventSaleCanceled:
     handler: index.runCronJobGetEventSaleCanceled
+    timeout: 30
     events:
       - schedule: rate(1 minute)
 
   runCronJobGetEventPriceChanged:
     handler: index.runCronJobGetEventPriceChanged
+    timeout: 30
     events:
       - schedule: rate(1 minute)
 

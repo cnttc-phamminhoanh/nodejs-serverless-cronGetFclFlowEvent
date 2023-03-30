@@ -3,7 +3,7 @@ const { pool, connectDB } = require("../../database");
 connectDB();
 
 const createTableQuery = `
-    CREATE TABLE IF NOT EXISTS afl_events (
+    CREATE TABLE IF NOT EXISTS event_cursor (
       "id" serial PRIMARY KEY,
       "blockHeight" INTEGER,
       "type" VARCHAR(255),
@@ -16,7 +16,7 @@ pool.query(createTableQuery, (err) => {
   if (err) {
     console.error(err);
   } else {
-    console.log("Table afl_events created successfully");
+    console.log("Table event_cursors created successfully");
     process.exit();
   }
   pool.end();

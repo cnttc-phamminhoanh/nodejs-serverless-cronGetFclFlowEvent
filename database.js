@@ -1,11 +1,13 @@
+const dotenv = require("dotenv");
+dotenv.config();
 const { Pool } = require('pg');
 
 const config = {
-  user: 'postgres',
-  host: 'localhost',
-  database: 'afl-DB',
-  password: '123456',
-  port: 5432
+  user: process.env.DATABASE_USERNAME,
+  host: process.env.DATABASE_HOST,
+  database:process.env.DATABASE_DATABASE,
+  password: process.env.DATABASE_PASSWORD,
+  port: process.env.DATABASE_PORT,
 }
 
 let client;

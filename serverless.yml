@@ -9,26 +9,26 @@ provider:
   runtime: nodejs14.x
 
 functions:
-  runCronJobGetEventForSale:
-    handler: index.runCronJobGetEventForSale
+  getForSaleEventHandler:
+    handler: index.getForSaleEventHandler
     timeout: 30
     events:
       - schedule: rate(1 minute)
 
-  runCronJobGetEventTokenPurchased:
-    handler: index.runCronJobGetEventTokenPurchased
+  getTokenPurchasedEventHandler:
+    handler: index.getTokenPurchasedEventHandler
     timeout: 30
     events:
       - schedule: rate(1 minute)
 
-  runCronJobGetEventSaleCanceled:
-    handler: index.runCronJobGetEventSaleCanceled
+  getSaleCanceledEventHandler:
+    handler: index.getSaleCanceledEventHandler
     timeout: 30
     events:
       - schedule: rate(1 minute)
 
-  runCronJobGetEventPriceChanged:
-    handler: index.runCronJobGetEventPriceChanged
+  getPriceChangedEventHandler:
+    handler: index.getPriceChangedEventHandler
     timeout: 30
     events:
       - schedule: rate(1 minute)

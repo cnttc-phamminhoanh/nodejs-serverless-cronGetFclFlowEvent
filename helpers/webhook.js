@@ -1,5 +1,5 @@
 const qs = require("qs");
-const axios = require('axios')
+const axios = require("axios");
 
 async function sendData(params) {
   try {

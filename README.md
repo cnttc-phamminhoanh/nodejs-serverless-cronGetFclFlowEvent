@@ -9,9 +9,9 @@
 
 ## Set up
 
-- Create new database in postgres: `AFL-lambda-DB`
+- Create a file: `.env` in the root directory, same as the file `.envExample`
 
-- Open database.js file and change config fields: database: `AFL-lambda-DB`, password: `<your_password>`.
+- Config the fields at the bottom #DATABASE.
 
 - Install packages:
 
@@ -19,23 +19,7 @@
 npm install
 ```
 
-- Create table: `afl_events`:
-
-```pseudo
-cd ./src/migrations
-```
-
-```pseudo
-node createEventCursorTable.js
-```
-
 ## Run project
-
-- Access root foder:
-
-```pseudo
-cd ../../
-```
 
 - Run in local:
 

@@ -2,9 +2,9 @@ const fcl = require("@onflow/fcl");
 
 async function getEventsByRange(params) {
   try {
-    const { eventName, fromBlockHeight, toBlockHeight } = params;
+    const { eventId, fromBlockHeight, toBlockHeight } = params;
 
-    if (!eventName || !fromBlockHeight || !toBlockHeight) {
+    if (!eventId || !fromBlockHeight || !toBlockHeight) {
       throw {
         code: 400,
         message: "Invalid params",
@@ -12,18 +12,14 @@ async function getEventsByRange(params) {
     }
 
     const events = await fcl.send([
-      fcl.getEventsAtBlockHeightRange(
-        eventName,
-        fromBlockHeight,
-        toBlockHeight
-      ),
+      fcl.getEventsAtBlockHeightRange(eventId, fromBlockHeight, toBlockHeight),
     ]);
 
     const decoded = await fcl.decode(events);
 
     return decoded;
   } catch (error) {
-    console.log(`* Function getEventsByRange error: ${error}`);
+    console.log(`* Function getEventsByRange error: ${JSON.stringify(error)}`);
   }
 }
 
@@ -42,7 +38,7 @@ async function getBlockAtBlockId(blockId) {
 
     return decoded;
   } catch (error) {
-    console.log(`* Function getBlockAtBlockId error: ${error}`);
+    console.log(`* Function getBlockAtBlockId error: ${JSON.stringify(error)}`);
   }
 }
 
@@ -52,30 +48,28 @@ async function getLatestBlock() {
 
     return block;
   } catch (error) {
-    console.log(`* Function getLatestBlock error: ${error}`);
+    console.log(`* Function getLatestBlock error: ${JSON.stringify(error)}`);
   }
 }
 
 async function getEventsAtBlockIds(params) {
   try {
-    const { eventName, blockIds } = params;
+    const { eventId, blockIds } = params;
 
-    if (!eventName || !blockIds) {
+    if (!eventId || !blockIds) {
       throw {
         code: 400,
         message: "Invalid params",
       };
     }
 
-    const events = await fcl.send([
-      fcl.getEventsAtBlockIds(eventName, blockIds),
-    ]);
+    const events = await fcl.send([fcl.getEventsAtBlockIds(eventId, blockIds)]);
 
     const decoded = await fcl.decode(events);
 
     return decoded;
   } catch (error) {
-    console.log(`* Function getEventsAtBlockIds error: ${error}`);
+    console.log(`* Function getEventsAtBlockIds error: ${JSON.stringify(error)}`);
   }
 }
 
